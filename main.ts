@@ -1,4 +1,4 @@
-radio.setFrequencyBand(66)
+radio.setFrequencyBand(73)
 radio.setTransmitPower(5)
 radio.setGroup(73)
 radio.setTransmitSerialNumber(true)
@@ -34,3 +34,52 @@ const servoMove = (direction: ServoDirection): void => {
     basic.pause(2000)
     PCAmotor.StopServo(PCAmotor.Servos.S1)
 }
+
+///
+
+
+type Protokol = {
+    x: number; //smer
+    y: number; //rychlost
+    // a: boolean;
+    // b: boolean;
+    // logo: boolean
+}
+
+let letter: string = ""
+
+radio.onReceivedString( function (received: string) {
+
+    letter = received
+
+    let article = letter.split(";")
+    let data: Protokol = {
+        x: parseInt(article[0]),
+        y: parseInt(article[1]),
+        // a: article[2] === "1",
+        // b: article[3] === "1",
+        // logo: article[4] === "1"
+    }
+
+    let direction = Math.map(data.x, -1024, 1023, -120, 120);
+    let speed = Math.map(data.y, -1024, 1023, -255, 255);
+
+    if (data.x <= 0){
+        PCAmotor.MotorRun(PCAmotor.Motors.M1, -speed)
+    } else if (data.x >= 0) {
+        PCAmotor.MotorRun(PCAmotor.Motors.M4, speed)
+    }
+
+    if (data.x <= 0 && data.y >= 0){
+        PCAmotor.MotorRun(PCAmotor.Motors.M4, speed -direction)
+    } else if (data.x >= 0 && data.y >= 0) {
+        PCAmotor.MotorRun(PCAmotor.Motors.M1, -speed -direction)
+    } else if (data.x >= 0 && data.y <= 0) {
+        PCAmotor.MotorRun(PCAmotor.Motors.M1, -speed + direction)
+    } else if (data.x <= 0 && data.y <= 0) {
+        PCAmotor.MotorRun(PCAmotor.Motors.M4, speed + direction)
+    }
+    
+
+
+})
