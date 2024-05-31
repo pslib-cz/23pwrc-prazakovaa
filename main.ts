@@ -1,6 +1,6 @@
 radio.setFrequencyBand(66)
 radio.setTransmitPower(5)
-radio.setGroup(222)
+radio.setGroup(73)
 radio.setTransmitSerialNumber(true)
 
 enum Pins {
